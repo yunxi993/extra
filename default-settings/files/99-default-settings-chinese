@@ -33,4 +33,7 @@ uci set firewall.@defaults[0].flow_offloading='1'
 uci set firewall.@defaults[0].flow_offloading_hw='0'
 uci commit firewall
 
+echo "x86" > /tmp/sysinfo/model
+crontab /etc/crontabs/root
+
 exit 0
