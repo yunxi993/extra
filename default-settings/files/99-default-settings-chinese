@@ -36,6 +36,9 @@ uci commit firewall
 uci delete network.globals.ula_prefix
 uci commit network
 
+#hwclock -l -r
+hwclock -l -w
+
 #echo "echo "x86" > /tmp/sysinfo/model" >> /etc/crontabs/root
 #crontab /etc/crontabs/root
 
