@@ -37,6 +37,8 @@ uci delete network.globals.ula_prefix
 uci delete network.globals.packet_steering
 uci commit network
 
+service ddns stop
+
 #hwclock -l -r
 hwclock -l -w
 
