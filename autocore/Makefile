@@ -43,7 +43,6 @@ define Package/autocore/install
 	$(INSTALL_BIN) ./files/090-cover-index_files $(1)/etc/uci-defaults/
 
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/view/admin_status/index/
-	$(INSTALL_DATA) ./files/nvme_status.htm $(1)/usr/lib/lua/luci/view/admin_status/index/
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/view/admin_status/index
 	$(INSTALL_DATA) ./files/disc_status.htm $(1)/usr/lib/lua/luci/view/admin_status/index/
 
