@@ -34,8 +34,6 @@ endef
 define Package/autocore/install
 	$(INSTALL_DIR) $(1)/etc
 	$(CP) ./files/10_system.js $(1)/etc/rpcd_10_system.js
-	$(CP) ./files/20_memory.js $(1)/etc/rpcd_20_memory.js
-	$(CP) ./files/30_network.js $(1)/etc/rpcd_30_network.js
 	$(CP) ./files/luci $(1)/etc/rpcd_luci
 	$(CP) ./files/luci-base.json $(1)/etc/rpcd_luci-base.json
 
