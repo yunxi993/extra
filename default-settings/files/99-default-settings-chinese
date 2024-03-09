@@ -33,7 +33,7 @@ uci set firewall.@defaults[0].flow_offloading='1'
 uci set firewall.@defaults[0].flow_offloading_hw='0'
 uci commit firewall
 
-#uci delete network.globals.ula_prefix
+uci delete network.globals.ula_prefix
 #uci delete network.globals.packet_steering
 uci commit network
 
