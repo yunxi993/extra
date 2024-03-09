@@ -93,7 +93,7 @@ return baseclass.extend({
 				systeminfo.load[1] / 65535.0,
 				systeminfo.load[2] / 65535.0
 			) : null,
-			_('CPU 使用率'),    cpuusage.cpuusage
+			_('CPU 使用率 (%)'),    cpuusage.cpuusage
 		];
 
 		if (tempinfo.tempinfo) {
