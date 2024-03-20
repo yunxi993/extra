@@ -38,6 +38,7 @@ uci delete network.globals.ula_prefix
 uci commit network
 
 /etc/init.d/ddns disable
+/etc/init.d/sing-box disable
 
 #hwclock -l -r
 #hwclock -l -w
