@@ -37,13 +37,15 @@ uci delete network.globals.ula_prefix
 #uci delete network.globals.packet_steering
 uci commit network
 
+uci set fstab.@global[0].anon_mount=1
+uci commit fstab
+
 /etc/init.d/ddns disable
+/etc/init.d/ddns stop
 /etc/init.d/sing-box disable
+/etc/init.d/sing-box stop
 
 #hwclock -l -r
 #hwclock -l -w
-
-#echo "echo "x86" > /tmp/sysinfo/model" >> /etc/crontabs/root
-#crontab /etc/crontabs/root
 
 exit 0
