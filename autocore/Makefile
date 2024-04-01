@@ -35,14 +35,9 @@ define Package/autocore/install
 	$(INSTALL_DIR) $(1)/etc
 	$(CP) ./files/10_system.js $(1)/etc/rpcd_10_system.js
 	$(CP) ./files/luci $(1)/etc/rpcd_luci
-	$(CP) ./files/luci-base.json $(1)/etc/rpcd_luci-base.json
 
 	$(INSTALL_DIR) $(1)/etc/uci-defaults
 	$(INSTALL_BIN) ./files/090-cover-index_files $(1)/etc/uci-defaults/
-
-	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/view/admin_status/index/
-	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/view/admin_status/index
-#	$(INSTALL_DATA) ./files/disc_status.htm $(1)/usr/lib/lua/luci/view/admin_status/index/
 
 ifneq ($(filter i386 i686 x86_64, $(ARCH)),)
 	$(INSTALL_DIR) $(1)/etc/init.d
@@ -52,9 +47,6 @@ endif
 	$(INSTALL_DIR) $(1)/sbin
 	$(INSTALL_BIN) ./files/cpuinfo $(1)/sbin/
 	$(INSTALL_BIN) ./files/getcpu $(1)/sbin/
-ifneq ($(filter ipq% mediatek% qualcommax%, $(TARGETID)),)
-	$(INSTALL_BIN) ./files/tempinfo $(1)/sbin/
-endif
 
 	$(INSTALL_DIR) $(1)/usr/share/rpcd/acl.d
 	$(CP) ./files/luci-mod-status-autocore.json $(1)/usr/share/rpcd/acl.d/
