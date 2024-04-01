@@ -52,5 +52,4 @@ define Package/autocore-x86/install
 	$(INSTALL_BIN) ./files/x86/autocore $(1)/etc/init.d/
 endef
 
-$(eval $(call BuildPackage,autocore-arm))
 $(eval $(call BuildPackage,autocore-x86))
