@@ -34,9 +34,9 @@ uci set firewall.@defaults[0].flow_offloading_hw='0'
 uci commit firewall
 
 uci delete network.globals.ula_prefix
+#uci delete network.globals.packet_steering
 uci commit network
 /etc/init.d/network restart
-#uci delete network.globals.packet_steering
 
 uci set fstab.@global[0].anon_mount=1
 uci commit fstab
@@ -45,7 +45,7 @@ uci commit fstab
 /etc/init.d/ddns stop
 /etc/init.d/sing-box disable
 /etc/init.d/sing-box stop
-#
+
 #hwclock -l -r
 #hwclock -l -w
 
