@@ -46,10 +46,12 @@ endif
 
 	$(INSTALL_DIR) $(1)/sbin
 	$(INSTALL_BIN) ./files/cpuinfo $(1)/sbin/
-	$(INSTALL_BIN) ./files/getcpu $(1)/sbin/
 
 	$(INSTALL_DIR) $(1)/usr/share/rpcd/acl.d
 	$(CP) ./files/luci-mod-status-autocore.json $(1)/usr/share/rpcd/acl.d/
+
+	$(INSTALL_DIR) $(1)/www/luci-static/resources/view/status/include
+	$(INSTALL_DATA) ./files/29_ethinfo.js $(1)/www/luci-static/resources/view/status/include/
 
 ifeq ($(filter ipq806x%, $(TARGETID)),)
 	$(INSTALL_DIR) $(1)/www/luci-static/resources/view/status/include
