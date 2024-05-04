@@ -18,7 +18,7 @@ start() {
 
 	echo $rps_sock_flow_entries > /proc/sys/net/core/rps_sock_flow_entries
 
-	echo 1 > /proc/sys/net/core/backlog_threaded
+	#echo 1 > /proc/sys/net/core/backlog_threaded
 
 	for i in $(ip address | awk -F ': ' '/eth[0-9]+/ {print $2}' | grep -v '@' | xargs)
 	do

@@ -30,19 +30,22 @@ define Build/Compile
 endef
 
 define Package/autocore/install
+	$(INSTALL_DIR) $(1)/etc
+	$(CP) ./files/10_system.js $(1)/etc/rpcd_10_system.js
+	$(CP) ./files/luci $(1)/etc/rpcd_luci
+
 	$(INSTALL_DIR) $(1)/etc/uci-defaults
 	$(INSTALL_BIN) ./files/60-autocore-reload-rpcd $(1)/etc/uci-defaults/
-
-ifneq ($(filter i386 i686 x86_64, $(ARCH)),)
-	$(INSTALL_DIR) $(1)/etc/init.d
-	$(INSTALL_BIN) ./files/autocore $(1)/etc/init.d/
-endif
 
 	$(INSTALL_DIR) $(1)/sbin
 	$(INSTALL_BIN) ./files/cpuinfo $(1)/sbin/
 
 	$(INSTALL_DIR) $(1)/usr/share/rpcd/acl.d
 	$(CP) ./files/luci-mod-status-autocore.json $(1)/usr/share/rpcd/acl.d/
+
+	$(INSTALL_DIR) $(1)/etc/init.d
+	$(INSTALL_BIN) ./files/autocore $(1)/etc/init.d/
+
 endef
 
 $(eval $(call BuildPackage,autocore))
