@@ -4,19 +4,20 @@
 START=99
 
 start() {
-	rps_flow_cnt=4096
-	cpu_count=$(grep -c '^processor' /proc/cpuinfo)
-	rps_cpus=`printf "%x" $((2**$cpu_count-1))`
-	rps_sock_flow_entries=0
+	rfc=4096
+	threads="$(grep -c "processor" "/proc/cpuinfo")"
 
-	for preset in /sys/class/net/*/queues/rx-*/
+	sysctl -w net.core.rps_sock_flow_entries="$(( rfc * threads ))"
+
+	for fileRps in /sys/class/net/eth*/queues/rx-*/rps_cpus
 	do
-		echo "$rps_cpus" > "$preset"/rps_cpus
-		echo "$rps_flow_cnt" > "$preset"/rps_flow_cnt
-		rps_sock_flow_entries=$(($rps_sock_flow_entries+$rps_flow_cnt))
+		echo "$threads" > "$fileRps"
 	done
 
-	echo $rps_sock_flow_entries > /proc/sys/net/core/rps_sock_flow_entries
+	for fileRfc in /sys/class/net/eth*/queues/rx-*/rps_flow_cnt
+	do
+		echo "$rfc" > "$fileRfc"
+	done
 
 	#echo 1 > /proc/sys/net/core/backlog_threaded
 
