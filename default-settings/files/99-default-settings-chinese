@@ -7,11 +7,13 @@ if ! uci -q get system.@open_init[0].system_chn > "/dev/null"; then
 		set system.@system[0].timezone="CST-8"
 		set system.@system[0].zonename="Asia/Shanghai"
 
+		set system.@system[0].enable_server="1"
+
 		delete system.ntp.server
-		add_list system.ntp.server="ntp.tencent.com"
 		add_list system.ntp.server="ntp1.aliyun.com"
-		add_list system.ntp.server="ntp.ntsc.ac.cn"
-		add_list system.ntp.server="cn.ntp.org.cn"
+		add_list system.ntp.server="ntp.tencent.com"
+		add_list system.ntp.server="time.apple.com"
+		add_list system.ntp.server="time.windows.com"
 
 		set system.@open_init[0].system_chn="1"
 		commit system
