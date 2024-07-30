@@ -9,9 +9,9 @@ if ! uci -q get system.@open_init[0].system_chn > "/dev/null"; then
 
 		delete system.ntp.server
 		set system.ntp.enable_server="1"
+		add_list system.ntp.server="time.apple.com"
 		add_list system.ntp.server="ntp1.aliyun.com"
 		add_list system.ntp.server="ntp.tencent.com"
-		add_list system.ntp.server="time.apple.com"
 		add_list system.ntp.server="time.windows.com"
 
 		set system.@open_init[0].system_chn="1"
