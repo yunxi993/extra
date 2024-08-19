@@ -29,9 +29,7 @@ start() {
 			ethtool -K "$i" tx-checksum-ipv6 on
 		}
 		ethtool -K "$i" tx-scatter-gather on
-		ethtool -K "$i" gso on
 		ethtool -K "$i" tso on
-		ethtool -K "$i" ufo on
 
 		if ethtool -i "$i" | grep -q "driver: igc"; then
 			ethtool -G "$i" rx "$(ethtool -g "$i" | awk '/^RX:/ {print $2; exit}')"
