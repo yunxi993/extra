@@ -26,6 +26,4 @@ fi
 
 sed -i.bak "s,https://downloads.immortalwrt.org,$opkg_mirror,g" "/etc/opkg/distfeeds.conf"
 
-sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/g' /etc/ssh/sshd_config
-
 exit 0

@@ -12,9 +12,14 @@ if ! uci -q get system.@open_init[0].lang > "/dev/null"; then
 	EOF
 fi
 
+sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/g' /etc/ssh/sshd_config
+
 sed -i "/log-facility/d" "/etc/dnsmasq.conf"
 echo "log-facility=/dev/null" >> "/etc/dnsmasq.conf"
 
 ln -sf "/sbin/ip" "/usr/bin/ip"
+
+rm -rf /tmp/luci-modulecache
+rm -f /tmp/luci-indexcache
 
 exit 0
