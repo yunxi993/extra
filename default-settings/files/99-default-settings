@@ -20,9 +20,9 @@ uci commit system
 uci set dropbear.@dropbear[0].Interface='lan'
 uci commit dropbear
 
-uci set dhcp.dnsmasq.cachesize='0'
-uci set dhcp.dnsmasq.min_cache_ttl='0'
-uci set dhcp.dnsmasq.max_cache_ttl='0'
+uci set dhcp.cfg01411c.cachesize='0'
+uci set dhcp.cfg01411c.min_cache_ttl='0'
+uci set dhcp.cfg01411c.max_cache_ttl='0'
 uci set dhcp
 
 sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/g' /etc/ssh/sshd_config
