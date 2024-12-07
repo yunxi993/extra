@@ -14,7 +14,7 @@ uci set system.@system[0].zonename=Asia/Shanghai
 uci set system.ntp.enable_server='1'
 uci set system.ntp.interface='lan'
 uci set system.ntp.use_dhcp='0'
-delete system.ntp.server
+uci del system.ntp.server
 uci add_list system.ntp.server='ntp1.aliyun.com'
 uci commit system
 
