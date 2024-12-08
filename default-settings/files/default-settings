@@ -30,6 +30,8 @@ uci set dhcp
 sed -i '/log-facility/d' /etc/dnsmasq.conf
 echo "log-facility=/dev/null" >> /etc/dnsmasq.conf
 
+[ ! -f '/usr/bin/ip' ] && [ -f '/sbin/ip' ] && ln -sf /sbin/ip /usr/bin/ip
+
 #SSH Key
 sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/g' /etc/ssh/sshd_config
 
