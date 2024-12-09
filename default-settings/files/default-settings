@@ -13,8 +13,9 @@ uci set system.@system[0].timezone=CST-8
 uci set system.@system[0].zonename=Asia/Shanghai
 uci set system.ntp.enable_server='1'
 uci set system.ntp.interface='lan'
-uci set system.ntp.use_dhcp='0'
 uci del system.ntp.server
+uci add_list system.ntp.server='ntp.ntsc.ac.cn'
+uci add_list system.ntp.server='ntp.tencent.com'
 uci add_list system.ntp.server='ntp1.aliyun.com'
 uci commit system
 
@@ -35,7 +36,7 @@ echo "log-facility=/dev/null" >> /etc/dnsmasq.conf
 #SSH Key
 sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/g' /etc/ssh/sshd_config
 
-#rm -rf /tmp/luci-modulecache
-#rm -f /tmp/luci-indexcache
+rm -rf /tmp/luci-modulecache
+rm -f /tmp/luci-indexcache
 
 exit 0
