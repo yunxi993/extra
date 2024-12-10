@@ -41,7 +41,6 @@ define Package/autocore/install
 	$(INSTALL_BIN) ./files/cpuinfo $(1)/sbin/
 
 	$(INSTALL_DIR) $(1)/usr/share/rpcd/acl.d
-	$(CP) ./files/luci-mod-status.json $(1)/usr/share/rpcd/acl.d/
 	$(CP) ./files/luci-mod-status-autocore.json $(1)/usr/share/rpcd/acl.d/
 
 	$(INSTALL_DIR) $(1)/etc/init.d

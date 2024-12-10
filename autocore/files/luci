@@ -4,7 +4,6 @@
 'use strict';
 
 import { stdin, access, dirname, basename, open, popen, glob, lsdir, readfile, readlink, error } from 'fs';
-import { connect } from 'ubus';
 import { cursor } from 'uci';
 
 import { init_list, init_index, init_enabled, init_action, conntrack_list, process_list } from 'luci.sys';
@@ -49,7 +48,6 @@ const methods = {
 		call: function(request) {
 			switch (request.args.action) {
 			case 'enable':
-			case 'enabled':
 			case 'disable':
 			case 'start':
 			case 'stop':
@@ -208,9 +206,10 @@ const methods = {
 				dropbear:   access('/usr/sbin/dropbear') == true,
 				cabundle:   access('/etc/ssl/certs/ca-certificates.crt') == true,
 				relayd:     access('/usr/sbin/relayd') == true,
+				apk:        access('/usr/bin/apk') == true,
 			};
 
-			const wifi_features = [ 'eap', '11ac', '11ax', '11r', 'acs', 'sae', 'owe', 'suiteb192', 'wep', 'wps' ];
+			const wifi_features = [ 'eap', '11ac', '11ax', '11be', '11r', 'acs', 'sae', 'owe', 'suiteb192', 'wep', 'wps', 'ocv' ];
 
 			if (access('/usr/sbin/hostapd')) {
 				result.hostapd = { cli: access('/usr/sbin/hostapd_cli') == true };
@@ -544,36 +543,40 @@ const methods = {
 
 	getBuiltinEthernetPorts: {
 		call: function() {
-			const ubus = connect();
-			const sysboard = ubus.call('system', 'board');
+			let fd = open('/etc/board.json', 'r');
+			let board = fd ? json(fd) : {};
 			let ports = [];
 
-			if (
-				(type(sysboard) !== 'object') ||
-				match(sysboard.release.target, /^(armsr|bcm27xx|mvebu|rockchip|sifiveu|sunxi|x86)/)
-			) {
-				const stat = ubus.call('network.device', 'status') || {};
-				map(keys(stat), (ifname) => {
-					if (
-						ifname &&
-						stat[ifname]?.devtype in ['ethernet', 'dsa'] &&
-						length(stat[ifname]['link-advertising'])
-					)
-						push(ports, { role: 'unknown', device: ifname });
-				});
-			} else {
-				const fd = open('/etc/board.json', 'r');
-				const board = fd ? json(fd) : {};
-				for (let k in [ 'lan', 'wan' ]) {
-					if (!board?.network?.[k])
+			for (let k in [ 'lan', 'wan' ]) {
+				if (!board?.network?.[k])
+					continue;
+
+				if (type(board.network[k].ports) == 'array') {
+					for (let ifname in board.network[k].ports) {
+						push(ports, { role: k, device: ifname });
+					}
+				}
+				else if (type(board.network[k].device) == 'string') {
+					push(ports, { role: k, device: board.network[k].device });
+				}
+			}
+
+			/* Workaround for targets that do not enumerate  all netdevs in board.json */
+			if (uname().machine in [ 'x86_64' ] &&
+			    match(ports[0]?.device, /^eth\d+$/)) {
+				let bus = readlink(`/sys/class/net/${ports[0].device}/device/subsystem`);
+
+				for (let netdev in lsdir('/sys/class/net')) {
+					if (!match(netdev, /^eth\d+$/))
 						continue;
 
-					if (type(board.network[k].ports) == 'array') {
-						for (let ifname in board.network[k].ports)
-							push(ports, { role: k, device: ifname });
-					} else if (type(board.network[k].device) == 'string') {
-						push(ports, { role: k, device: board.network[k].device });
-					}
+					if (length(filter(ports, port => port.device == netdev)))
+						continue;
+
+					if (readlink(`/sys/class/net/${netdev}/device/subsystem`) != bus)
+						continue;
+
+					push(ports, { role: 'unknown', device: netdev });
 				}
 			}
 
@@ -608,7 +611,7 @@ const methods = {
 
 	getCPUUsage: {
 		call: function() {
-			const fd = popen('top -n1 | awk \'/^CPU/ {printf("%d%", 100 - $8)}\'');
+			const fd = popen('busybox top -n1 | awk \'/^CPU/ {printf("%d%", 100 - $8)}\'');
 			if (fd) {
 				let cpuusage = fd.read('all');
 				if (!cpuusage)
