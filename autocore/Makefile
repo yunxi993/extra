@@ -35,7 +35,7 @@ define Package/autocore/install
 	$(CP) ./files/luci $(1)/etc/rpcd_luci
 
 	$(INSTALL_DIR) $(1)/etc/uci-defaults
-	$(INSTALL_BIN) ./files/090-cover-index_files $(1)/etc/uci-defaults/
+	$(INSTALL_BIN) ./files/90-cover-index_files $(1)/etc/uci-defaults/
 
 	$(INSTALL_DIR) $(1)/sbin
 	$(INSTALL_BIN) ./files/cpuinfo $(1)/sbin/
