@@ -27,7 +27,7 @@ uci commit dropbear
 uci set dhcp.cfg01411c.cachesize='0'
 uci set dhcp.cfg01411c.min_cache_ttl='0'
 uci set dhcp.cfg01411c.max_cache_ttl='0'
-uci set dhcp
+uci commit dhcp
 sed -i '/log-facility/d' /etc/dnsmasq.conf
 echo "log-facility=/dev/null" >> /etc/dnsmasq.conf
 
