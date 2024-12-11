@@ -611,7 +611,7 @@ const methods = {
 
 	getCPUUsage: {
 		call: function() {
-			const fd = popen('busybox top -n1 | awk \'/^CPU/ {printf("%d%", 100 - $8)}\'');
+			const fd = popen('top -n1 | awk \'/^CPU/ {printf("%d%", 100 - $8)}\'');
 			if (fd) {
 				let cpuusage = fd.read('all');
 				if (!cpuusage)
