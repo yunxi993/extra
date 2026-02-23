@@ -9,14 +9,13 @@ uci set fstab.@global[0].anon_mount=1
 uci commit fstab
 
 # Timezone
-uci set system.@system[0].timezone=CST-8
-uci set system.@system[0].zonename=Asia/Shanghai
-uci set system.ntp.enable_server='1'
-uci set system.ntp.interface='lan'
-uci del system.ntp.server
-uci add_list system.ntp.server='ntp.ntsc.ac.cn'
-uci add_list system.ntp.server='ntp.tencent.com'
-uci add_list system.ntp.server='ntp1.aliyun.com'
+uci set system.@system[0].timezone="CST-8"
+uci set system.@system[0].zonename="Asia/Shanghai"
+
+uci delete system.ntp.server
+uci add_list system.ntp.server="ntp.ntsc.ac.cn"
+uci add_list system.ntp.server="ntp1.aliyun.com"
+uci add_list system.ntp.server="ntp1.aliyun.com"
 uci commit system
 
 # Dropbear
