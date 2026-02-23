@@ -1,12 +1,12 @@
 #!/bin/sh
 
 # Language
-uci set luci.main.lang=auto
+uci set luci.main.lang="auto"
 uci commit luci
 
 # Automount
-uci set fstab.@global[0].anon_mount=1
-uci commit fstab
+#uci set fstab.@global[0].anon_mount="1"
+#uci commit fstab
 
 # Timezone
 uci set system.@system[0].timezone="CST-8"
@@ -19,18 +19,19 @@ uci add_list system.ntp.server="ntp1.aliyun.com"
 uci commit system
 
 # Dropbear
-uci set dropbear.@dropbear[0].Interface='lan'
+uci set dropbear.@dropbear[0].Interface="lan"
 uci commit dropbear
 
 # dnsmasq
-uci set dhcp.cfg01411c.cachesize='0'
-uci set dhcp.cfg01411c.min_cache_ttl='0'
-uci set dhcp.cfg01411c.max_cache_ttl='0'
+uci set dhcp.cfg01411c.cachesize="0"
+uci set dhcp.cfg01411c.min_cache_ttl="0"
+uci set dhcp.cfg01411c.max_cache_ttl="0"
 uci commit dhcp
-sed -i '/log-facility/d' /etc/dnsmasq.conf
-echo "log-facility=/dev/null" >> /etc/dnsmasq.conf
 
-[ ! -f '/usr/bin/ip' ] && [ -f '/sbin/ip' ] && ln -sf /sbin/ip /usr/bin/ip
+sed -i "/log-facility/d" "/etc/dnsmasq.conf"
+echo "log-facility=/dev/null" >> "/etc/dnsmasq.conf"
+
+[ ! -f "/usr/bin/ip" ] && [ -f "/sbin/ip" ] && ln -sf "/sbin/ip" "/usr/bin/ip"
 
 #SSH Key
 sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/g' /etc/ssh/sshd_config
