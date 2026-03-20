@@ -13,9 +13,9 @@ uci set system.@system[0].timezone="CST-8"
 uci set system.@system[0].zonename="Asia/Shanghai"
 
 uci delete system.ntp.server
-uci add_list system.ntp.server="ntp.ntsc.ac.cn"
-uci add_list system.ntp.server="ntp1.aliyun.com"
 uci add_list system.ntp.server="ntp.tencent.com"
+uci add_list system.ntp.server="ntp1.aliyun.com"
+uci add_list system.ntp.server="ntp.ntsc.ac.cn"
 uci commit system
 
 # Dropbear
