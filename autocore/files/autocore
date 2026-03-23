@@ -41,7 +41,7 @@ start() {
                 enable_offload "$NIC" tx-checksum-ipv4
                 enable_offload "$NIC" tx-checksum-ipv6
             }
-            for f in tx-scatter-gather rx tx sg gso gro rx-gro-list tso ufo rxvlan txvlan; do
+            for f in tx-scatter-gather rx tx sg gso gro rx-gro-list tso ufo; do
                 enable_offload "$NIC" "$f"
             done
 
