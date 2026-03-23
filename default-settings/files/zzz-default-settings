@@ -13,7 +13,7 @@ uci set system.@system[0].timezone="CST-8"
 uci set system.@system[0].zonename="Asia/Shanghai"
 
 uci delete system.ntp.server
-uci delete system.ntp.use_dhcp
+uci set system.ntp.use_dhcp="0"
 uci set system.ntp.enabled="1"
 uci add_list system.ntp.server="ntp.tencent.com"
 uci add_list system.ntp.server="ntp1.aliyun.com"
