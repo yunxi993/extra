@@ -2,6 +2,13 @@
 'require baseclass';
 'require fs';
 'require rpc';
+'require uci';
+
+var callGetUnixtime = rpc.declare({
+	object: 'luci',
+	method: 'getUnixtime',
+	expect: { result: 0 }
+});
 
 var callLuciVersion = rpc.declare({
 	object: 'luci',
@@ -49,7 +56,9 @@ return baseclass.extend({
 			L.resolveDefault(callCPUInfo(), {}),
 			L.resolveDefault(callCPUUsage(), {}),
 			L.resolveDefault(callTempInfo(), {}),
-			L.resolveDefault(callLuciVersion(), { revision: _('unknown version'), branch: 'LuCI' })
+			L.resolveDefault(callLuciVersion(), { revision: _('unknown version'), branch: 'LuCI' }),
+			L.resolveDefault(callGetUnixtime(), 0),
+			uci.load('system')
 		]);
 	},
 
@@ -60,29 +69,31 @@ return baseclass.extend({
 		    cpuinfo     = data[3],
 		    cpuusage    = data[4],
 		    tempinfo    = data[5],
-		    luciversion = data[6];
+		    luciversion = data[6],
+		    unixtime    = data[7];
 
 		luciversion = luciversion.branch + ' ' + luciversion.revision;
 
 		var datestr = null;
 
-		if (systeminfo.localtime) {
-			var date = new Date(systeminfo.localtime * 1000);
+		if (unixtime) {
+			var date = new Date(unixtime * 1000),
+				zn = uci.get('system', '@system[0]', 'zonename')?.replaceAll(' ', '_') || 'UTC',
+				ts = uci.get('system', '@system[0]', 'clock_timestyle') || 0,
+				hc = uci.get('system', '@system[0]', 'clock_hourcycle') || 0;
 
-			datestr = '%04d-%02d-%02d %02d:%02d:%02d'.format(
-				date.getUTCFullYear(),
-				date.getUTCMonth() + 1,
-				date.getUTCDate(),
-				date.getUTCHours(),
-				date.getUTCMinutes(),
-				date.getUTCSeconds()
-			);
+			datestr = new Intl.DateTimeFormat(undefined, {
+				dateStyle: 'medium',
+				timeStyle: (ts == 0) ? 'long' : 'full',
+				hourCycle: (hc == 0) ? undefined : hc,
+				timeZone: zn
+			}).format(date);
 		}
 
 		var fields = [
 			_('Hostname'),         boardinfo.hostname,
 			_('Model'),            boardinfo.model + cpubench.cpubench,
-			_('Architecture'),     cpuinfo.cpuinfo || boardinfo.system,
+			_('Architecture'),     cpuinfo.cpuinfo,
 			_('Target Platform'),  (L.isObject(boardinfo.release) ? boardinfo.release.target : ''),
 			_('Firmware Version'), (L.isObject(boardinfo.release) ? boardinfo.release.description + ' / ' : '') + (luciversion || ''),
 			_('Kernel Version'),   boardinfo.kernel,
