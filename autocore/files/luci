@@ -9,12 +9,41 @@ import { cursor } from 'uci';
 import { init_list, init_index, init_enabled, init_action, conntrack_list, process_list } from 'luci.sys';
 import { revision, branch } from 'luci.version';
 import { statvfs, uname } from 'luci.core';
+import { connect } from 'ubus';
 
 import timezones from 'luci.zoneinfo';
 
 
 function shellquote(s) {
 	return `'${replace(s, "'", "'\\''")}'`;
+}
+
+function callPackageVersionCheck(pkg) {
+	let version = "";
+
+	if ( access('/bin/opkg') ) {
+		// <= v24.10
+		let fd = popen('opkg list-installed ' + shellquote(pkg) + ' 2>/dev/null');
+		if (fd) {
+			const re = regexp('^' + pkg + ' - (.+)$', 's');
+			const m = match(fd.read('all'), re);
+			version = m?.[1];
+
+			fd.close();
+		}
+	}
+	else if ( access('/usr/bin/apk') ) {
+		// > v24.10
+		let fd = popen('apk list -I ' + shellquote(pkg) + ' 2>/dev/null');
+		if (fd) {
+			const re = regexp('^' + pkg + '-(.+)$', 's');
+			const m = match(fd.read('all'), re);
+			version = m?.[1];
+
+			fd.close();
+		}
+	}
+	return version;
 }
 
 const methods = {
@@ -66,8 +95,9 @@ const methods = {
 		}
 	},
 
-	getLocaltime: {
+	getUnixtime: {
 		call: function(request) {
+			// time() ; Returns the current UNIX epoch.
 			return { result: time() };
 		}
 	},
@@ -196,6 +226,8 @@ const methods = {
 				firewall:   access('/sbin/fw3') == true,
 				firewall4:  access('/sbin/fw4') == true,
 				opkg:       access('/bin/opkg') == true,
+				bonding:    access('/sys/module/bonding'),
+				mii_tool:   access('/usr/sbin/mii-tool'),
 				offloading: access('/sys/module/xt_FLOWOFFLOAD/refcnt') == true || access('/sys/module/nft_flow_offload/refcnt') == true,
 				br2684ctl:  access('/usr/sbin/br2684ctl') == true,
 				swconfig:   access('/sbin/swconfig') == true,
@@ -207,9 +239,26 @@ const methods = {
 				cabundle:   access('/etc/ssl/certs/ca-certificates.crt') == true,
 				relayd:     access('/usr/sbin/relayd') == true,
 				apk:        access('/usr/bin/apk') == true,
+				ufpd:       access('/usr/sbin/ufpd') == true,
+				vrf:        access('/sys/module/vrf/refcnt') == true, // vrf.ko is loaded
+				netifd_vrf: false,
 			};
 
-			const wifi_features = [ 'eap', '11ac', '11ax', '11be', '11r', 'acs', 'sae', 'owe', 'suiteb192', 'wep', 'wps', 'ocv' ];
+			const wifi_features = [ 
+				'11ac',
+				'11ax',
+				'11be',
+				'11r',
+				'acs',
+				'eap',
+				'mesh',
+				'ocv',
+				'owe',
+				'sae',
+				'suiteb192',
+				'wep',
+				'wps',
+			];
 
 			if (access('/usr/sbin/hostapd')) {
 				result.hostapd = { cli: access('/usr/sbin/hostapd_cli') == true };
@@ -239,6 +288,28 @@ const methods = {
 
 				fd.close();
 			}
+
+			result.odhcpd = false;
+			fd = popen('odhcpd -h 2>/dev/null');
+
+			if (fd) {
+				const output = fd.read('all');
+
+				if (output) {
+					result.odhcpd = {};
+					const m = match(output, /^Features: (.+)$/s);
+
+					for (let opt in split(m?.[1], ' ')) {
+						let f = replace(opt, 'no-', '', 1);
+						result.odhcpd[lc(f)] = (f == opt);
+					}
+				}
+
+				fd.close();
+			}
+
+			// This check can be removed after v25 release
+			result.netifd_vrf = match(callPackageVersionCheck('netifd'), /^20[0-9][0-9]/s)?.[0] >= 2025;
 
 			fd = popen('ipset --help 2>/dev/null');
 
@@ -470,8 +541,8 @@ const methods = {
 
 				for (let line = fd.read('line'); length(line); line = fd.read('line')) {
 					const m = split(line, ' ');
-					const device = replace(m[0], /\\([0-9][0-9][0-9])/g, (m, n) => char(int(n, 8)));
-					const mount  = replace(m[1], /\\([0-9][0-9][0-9])/g, (m, n) => char(int(n, 8)));
+					const device = replace(m[0], /\\([0-9][0-9][0-9])/g, (m, n) => chr(int(n, 8)));
+					const mount  = replace(m[1], /\\([0-9][0-9][0-9])/g, (m, n) => chr(int(n, 8)));
 					const stat = statvfs(mount);
 
 					if (stat?.blocks > 0) {
@@ -493,6 +564,7 @@ const methods = {
 			}
 		}
 	},
+
 	getRealtimeStats: {
 		args: { mode: 'interface', device: 'eth0' },
 		call: function(request) {
@@ -584,6 +656,31 @@ const methods = {
 		}
 	},
 
+	getOdhcp6cStats: {
+		call: function() {
+			const ubus = connect();
+			const devs = ubus.call('network.device', 'status');
+
+			if (!devs)
+				return false;
+
+			const dev_stats = {};
+
+			for (let dev in devs) {
+				const m = ubus.call(`odhcp6c.${dev}`, 'get_statistics');
+
+				// not all interfaces are exposed unless odhcp6c runs on it
+				if (!m)
+					continue;
+
+				push(dev_stats, dev);
+				dev_stats[dev] = m;
+			}
+
+			return { result: dev_stats };
+		}
+	},
+
 	getCPUBench: {
 		call: function() {
 			return { cpubench: readfile('/etc/bench.log') || '' };
@@ -611,7 +708,7 @@ const methods = {
 
 	getCPUUsage: {
 		call: function() {
-			const fd = popen('top -n1 | awk \'/^CPU/ {printf("%d%", 100 - $8)}\'');
+			const fd = popen('/bin/busybox top -n1 | awk \'/^CPU/ {printf("%d%", 100 - $8)}\'');
 			if (fd) {
 				let cpuusage = fd.read('all');
 				if (!cpuusage)
@@ -659,6 +756,26 @@ const methods = {
 				return { onlineusers: onlineusers };
 			} else {
 				return { onlineusers: error() };
+			}
+		}
+	},
+
+	getETHInfo: {
+		call: function() {
+			if (!access('/sbin/ethinfo'))
+				return {};
+
+			const fd = popen('/sbin/ethinfo');
+			if (fd) {
+				let ethinfo = fd.read('all');
+				if (!ethinfo)
+					ethinfo = '{}';
+				ethinfo = json(ethinfo);
+				fd.close();
+
+				return { result: ethinfo };
+			} else {
+				return { result: error() };
 			}
 		}
 	}
