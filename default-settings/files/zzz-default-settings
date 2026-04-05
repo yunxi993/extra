@@ -15,8 +15,8 @@ uci set system.@system[0].zonename="Asia/Shanghai"
 uci delete system.ntp.server
 uci set system.ntp.use_dhcp="0"
 uci set system.ntp.enabled="1"
-uci add_list system.ntp.server="ntp.tencent.com"
 uci add_list system.ntp.server="ntp1.aliyun.com"
+uci add_list system.ntp.server="ntp.tencent.com"
 uci add_list system.ntp.server="ntp.ntsc.ac.cn"
 uci commit system
 
