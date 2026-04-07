@@ -54,6 +54,9 @@ uci set network.lan.ip6ifaceid='eui64'
 uci commit network
 /etc/init.d/network restart
 
+/etc/init.d/irqbalance disable
+/etc/init.d/irqbalance stop
+
 sed -i "/log-facility/d" "/etc/dnsmasq.conf"
 echo "log-facility=/dev/null" >> "/etc/dnsmasq.conf"
 
