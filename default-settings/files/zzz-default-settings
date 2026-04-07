@@ -55,14 +55,14 @@ uci commit network
 /etc/init.d/network restart
 
 #Copy adguardhome configfile
-cp -rf /mnt/mnt/nvme0n1p3/adguardhome.yaml /etc/adguardhome/
+cp -rf /mnt/nvme0n1p3/adguardhome.yaml /etc/adguardhome/
 /etc/init.d/adguardhome restart
 
 #Copy passwall2 configfile
-cp -rf /mnt/mnt/nvme0n1p3/passwall2 /etc/config/
+cp -rf /mnt/nvme0n1p3/passwall2 /etc/config/
 
 #Copy geo files
-cp -rf /mnt/mnt/nvme0n1p3/*.dat /usr/share/v2ray/
+cp -rf /mnt/nvme0n1p3/*.dat /usr/share/v2ray/
 
 /etc/init.d/irqbalance disable
 /etc/init.d/irqbalance stop
