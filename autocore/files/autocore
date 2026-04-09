@@ -21,7 +21,7 @@ start() {
 
     sysctl -w net.core.rps_sock_flow_entries="$(( cfr * threads ))" >/dev/null
 
-    sysctl -w net.netfilter.nf_conntrack_max=65536
+    sysctl -w net.netfilter.nf_conntrack_max=65536 2>/dev/null
 
     echo 1 > /proc/sys/net/ipv4/conf/br-lan/proxy_arp
 

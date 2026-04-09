@@ -39,7 +39,6 @@ uci commit firewall
 
 #Enable Packet Steering
 uci delete network.@globals[0].ula_prefix
-uci del network.@globals[0].steering_flows
 uci set network.@globals[0].packet_steering='0'
 #uci set network.@globals[0].packet_steering='2'
 #uci set network.@globals[0].steering_flows='128'
