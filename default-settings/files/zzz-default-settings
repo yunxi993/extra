@@ -12,7 +12,7 @@ uci commit fstab
 uci set system.@system[0].timezone="CST-8"
 uci set system.@system[0].zonename="Asia/Shanghai"
 
-uci delete system.ntp.server
+uci del system.ntp.server
 uci set system.ntp.use_dhcp="0"
 uci set system.ntp.enabled="1"
 uci add_list system.ntp.server="ntp1.aliyun.com"
@@ -33,12 +33,12 @@ uci set dhcp.@dnsmasq[0].dnsforwardmax='1500'
 uci commit dhcp
 
 #Firewall
-uci set firewall.@defaults[0].input='ACCEPT'
+#uci set firewall.@defaults[0].input='ACCEPT'
 uci set firewall.@defaults[0].synflood_protect='0'
 uci commit firewall
 
 #Enable Packet Steering
-uci delete network.@globals[0].ula_prefix
+uci del network.@globals[0].ula_prefix
 uci set network.@globals[0].packet_steering='0'
 #uci set network.@globals[0].packet_steering='2'
 #uci set network.@globals[0].steering_flows='128'
@@ -53,7 +53,7 @@ uci del network.wan6
 uci set network.lan.ip6assign='64'
 uci set network.lan.ip6ifaceid='eui64'
 uci commit network
-/etc/init.d/network restart
+/etc/init.d/odhcpd restart
 
 /etc/init.d/packet_steering disable
 /etc/init.d/packet_steering stop
