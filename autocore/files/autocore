@@ -62,7 +62,7 @@ start() {
                 enable_offload "$NIC" tx-checksum-ipv6
             }
 
-            for f in tx-scatter-gather tso; do
+            for f in tx-scatter-gather rx tx sg gso gro tso; do
                 enable_offload "$NIC" "$f"
             done
 
