@@ -66,6 +66,8 @@ start() {
                 enable_offload "$NIC" "$f"
             done
 
+            ethtool -K "$NIC" rx-gro-list off
+
             DRIVER=$(ethtool -i "$NIC" 2>/dev/null | awk '/driver:/ {print $2}')
             if [ "$DRIVER" = "igc" ]; then
             ethtool -L "$NIC" combined "$threads" 2>/dev/null || :
