@@ -9,23 +9,32 @@ start() {
 
     cpu_mask=$(printf '%x' $(( (1 << threads) - 1 )))
 
-    for fileRps in /sys/class/net/eth*/queues/rx-*/rps_cpus; do
-        [ -e "$fileRps" ] && echo "$cpu_mask" > "$fileRps"
-    done
+    #for fileRps in /sys/class/net/eth*/queues/rx-*/rps_cpus; do
+    #    [ -e "$fileRps" ] && echo "$cpu_mask" > "$fileRps"
+    #done
 
-    for fileRfc in /sys/class/net/eth*/queues/rx-*/rps_flow_cnt; do
-        [ -e "$fileRfc" ] && echo "$rfc" > "$fileRfc"
-    done
+    #for fileRfc in /sys/class/net/eth*/queues/rx-*/rps_flow_cnt; do
+    #    [ -e "$fileRfc" ] && echo "$rfc" > "$fileRfc"
+    #done
 
-    for fileRps in /sys/class/net/eth*/queues/tx-*/xps_cpus; do
-        [ -e "$fileRps" ] && echo "$cpu_mask" > "$fileRps"
-    done
+    #for fileRps in /sys/class/net/eth*/queues/tx-*/xps_cpus; do
+    #    [ -e "$fileRps" ] && echo "$cpu_mask" > "$fileRps"
+    #done
 
-    sysctl -w net.core.rps_sock_flow_entries="$(( cfr * threads ))" >/dev/null
+    #sysctl -w net.core.rps_sock_flow_entries="$(( cfr * threads ))" >/dev/null
+
+    #for base_irq in 137 142 147 152; do
+    #    for i in 0 1 2 3; do
+    #        irq=$((base_irq + i))
+    #        mask=$((1 << i))
+    #        echo "Setting IRQ $irq to affinity $mask"
+    #        echo "$mask" > "/proc/irq/$irq/smp_affinity"
+    #    done
+    #done
 
     sysctl -w net.netfilter.nf_conntrack_max=65536 >/dev/null
 
-    echo 1 > /proc/sys/net/ipv4/conf/br-lan/proxy_arp
+    #echo 1 > /proc/sys/net/ipv4/conf/br-lan/proxy_arp
 
     echo 65535 > /proc/sys/net/core/somaxconn
     echo 16384 > /proc/sys/net/ipv4/tcp_max_syn_backlog
