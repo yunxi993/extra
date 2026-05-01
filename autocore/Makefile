@@ -7,7 +7,8 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=autocore
 PKG_FLAGS:=nonshared
-PKG_RELEASE:=42
+PKG_VERSION:=1.0.2
+PKG_RELEASE:=1
 
 PKG_CONFIG_DEPENDS:= \
 	CONFIG_TARGET_bcm27xx \
@@ -31,17 +32,17 @@ endef
 
 define Package/autocore/install
 	$(INSTALL_DIR) $(1)/etc
-	$(CP) ./files/10_system.js $(1)/etc/rpcd_10_system.js
-	$(CP) ./files/luci $(1)/etc/rpcd_luci
+	$(INSTALL_DATA) ./files/10_system.js $(1)/etc/rpcd_10_system.js
+	$(INSTALL_DATA) ./files/luci $(1)/etc/rpcd_luci
 
 	$(INSTALL_DIR) $(1)/etc/uci-defaults
-	$(INSTALL_BIN) ./files/90-cover-index_files $(1)/etc/uci-defaults/
+	$(INSTALL_BIN) ./files/090-cover-index_files $(1)/etc/uci-defaults/
 
-	$(INSTALL_DIR) $(1)/sbin
-	$(INSTALL_BIN) ./files/cpuinfo $(1)/sbin/
+	#$(INSTALL_DIR) $(1)/sbin
+	#$(INSTALL_BIN) ./files/cpuinfo $(1)/sbin/
 
 	$(INSTALL_DIR) $(1)/usr/share/rpcd/acl.d
-	$(CP) ./files/luci-mod-status-autocore.json $(1)/usr/share/rpcd/acl.d/
+	$(INSTALL_DATA) ./files/luci-mod-status-autocore.json $(1)/usr/share/rpcd/acl.d/
 
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) ./files/autocore $(1)/etc/init.d/
