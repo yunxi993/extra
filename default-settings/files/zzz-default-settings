@@ -30,7 +30,7 @@ uci set dhcp.@dnsmasq[0].cachesize="0"
 uci set dhcp.@dnsmasq[0].min_cache_ttl="0"
 uci set dhcp.@dnsmasq[0].max_cache_ttl="0"
 uci set dhcp.@dnsmasq[0].dnsforwardmax='1500'
-uci set dhcp.@lan[0].force='1'
+uci set dhcp.lan.force='1'
 uci commit dhcp
 
 #Firewall
