@@ -59,8 +59,8 @@ uci commit network
 
 /etc/init.d/packet_steering disable
 /etc/init.d/packet_steering stop
-#/etc/init.d/irqbalance disable
-#/etc/init.d/irqbalance stop
+/etc/init.d/irqbalance disable
+/etc/init.d/irqbalance stop
 
 sed -i "/log-facility/d" "/etc/dnsmasq.conf"
 echo "log-facility=/dev/null" >> "/etc/dnsmasq.conf"
