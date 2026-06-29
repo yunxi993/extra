@@ -24,9 +24,6 @@ start() {
     [ -f /proc/sys/net/ipv4/tcp_collapse_max_bytes ] && \
         sysctl -qw net.ipv4.tcp_collapse_max_bytes=4194304
 
-    [ -d /sys/class/net/br-lan ] && \
-        sysctl -qw net.ipv4.conf.br-lan.proxy_arp=1
-
     uci_changed=0
     for nic_path in /sys/class/net/*; do
         nic=$(basename "$nic_path")
