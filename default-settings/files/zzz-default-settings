@@ -41,9 +41,9 @@ uci commit firewall
 
 #Enable Packet Steering
 uci del network.@globals[0].ula_prefix
-#uci set network.@globals[0].packet_steering='0'
-uci set network.@globals[0].packet_steering='2'
-uci set network.@globals[0].steering_flows='258'
+uci set network.@globals[0].packet_steering='0'
+#uci set network.@globals[0].packet_steering='2'
+#uci set network.@globals[0].steering_flows='258'
 uci del_list network.@device[0].ports='eth0'
 uci add_list network.@device[0].ports='eth1'
 uci add_list network.@device[0].ports='eth2'
@@ -57,8 +57,8 @@ uci set network.lan.ip6ifaceid='eui64'
 uci commit network
 /etc/init.d/odhcpd restart
 
-#/etc/init.d/packet_steering disable
-#/etc/init.d/packet_steering stop
+/etc/init.d/packet_steering disable
+/etc/init.d/packet_steering stop
 /etc/init.d/irqbalance disable
 /etc/init.d/irqbalance stop
 
