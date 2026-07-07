@@ -5,8 +5,8 @@ uci set luci.main.lang="auto"
 uci commit luci
 
 #Automount
-#uci set fstab.@global[0].anon_mount="1"
-#uci commit fstab
+uci set fstab.@global[0].anon_mount="1"
+uci commit fstab
 
 #Timezone
 uci set system.@system[0].timezone="CST-8"
@@ -61,6 +61,8 @@ uci commit network
 /etc/init.d/packet_steering stop
 /etc/init.d/irqbalance disable
 /etc/init.d/irqbalance stop
+/etc/init.d/passwall2_server disable
+/etc/init.d/passwall2_server stop
 
 sed -i "/log-facility/d" "/etc/dnsmasq.conf"
 echo "log-facility=/dev/null" >> "/etc/dnsmasq.conf"
