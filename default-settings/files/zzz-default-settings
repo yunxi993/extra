@@ -55,7 +55,9 @@ uci del network.wan6
 uci set network.lan.ip6assign='64'
 uci set network.lan.ip6ifaceid='eui64'
 uci commit network
-#/etc/init.d/odhcpd restart
+
+uci set dhcp.lan.ra_dns="0"
+uci commit dhcp
 
 /etc/init.d/packet_steering disable
 /etc/init.d/packet_steering stop
