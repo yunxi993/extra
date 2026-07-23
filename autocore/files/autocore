@@ -40,23 +40,19 @@ start() {
             uci_changed=1
         fi
 
-        if [ "$(uci -q get "network.$uci_name.gro")" != "1" ]; then
-            uci set "network.$uci_name.gro=1"
-            uci_changed=1
-        fi
-
         ethtool -K "$nic" rx-checksum on 2>/dev/null || true
         ethtool -K "$nic" tx-checksum-ip-generic on 2>/dev/null || {
             ethtool -K "$nic" tx-checksum-ipv4 on 2>/dev/null || true
             ethtool -K "$nic" tx-checksum-ipv6 on 2>/dev/null || true
         }
-        for f in sg tso tx-scatter-gather; do
+        for f in sg tx-scatter-gather; do
             ethtool -K "$nic" "$f" on 2>/dev/null || true
         done
 
+        ethtool -K "$nic" tso off 2>/dev/null || true
+
         DRIVER=$(ethtool -i "$nic" 2>/dev/null | awk '/driver:/ {print $2}')
         if [ "$DRIVER" = "igc" ]; then
-        ethtool -L "$nic" combined "$threads" 2>/dev/null || :
 
             RX_MAX=$(ethtool -g "$nic" 2>/dev/null | awk '/Pre-set maximums:/ {p=1;next} p && /^RX:/ {print $2;exit}')
             TX_MAX=$(ethtool -g "$nic" 2>/dev/null | awk '/Pre-set maximums:/ {p=1;next} p && /^TX:/ {print $2;exit}')
