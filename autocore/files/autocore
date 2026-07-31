@@ -49,8 +49,6 @@ start() {
             ethtool -K "$nic" "$f" on 2>/dev/null || true
         done
 
-        ethtool -K "$nic" tso off 2>/dev/null || true
-
         DRIVER=$(ethtool -i "$nic" 2>/dev/null | awk '/driver:/ {print $2}')
         if [ "$DRIVER" = "igc" ]; then
 
