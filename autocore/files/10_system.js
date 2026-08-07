@@ -64,13 +64,13 @@ return baseclass.extend({
 
 	render: function(data) {
 		var boardinfo   = data[0],
-		    systeminfo  = data[1],
-		    cpubench    = data[2],
-		    cpuinfo     = data[3],
-		    cpuusage    = data[4],
-		    tempinfo    = data[5],
-		    luciversion = data[6],
-		    unixtime    = data[7];
+			systeminfo  = data[1],
+			cpubench    = data[2],
+			cpuinfo     = data[3],
+			cpuusage    = data[4],
+			tempinfo    = data[5],
+			luciversion = data[6],
+			unixtime    = data[7];
 
 		luciversion = luciversion.branch + ' ' + luciversion.revision;
 
