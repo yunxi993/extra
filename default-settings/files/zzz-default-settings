@@ -5,31 +5,32 @@ uci set luci.main.lang="auto"
 uci commit luci
 
 #Automount
-uci set fstab.@global[0].anon_mount="1"
+uci set fstab.@global[0].anon_mount='1'
 uci commit fstab
 
 #Timezone
-uci set system.@system[0].timezone="CST-8"
-uci set system.@system[0].zonename="Asia/Shanghai"
+uci set system.@system[0].timezone='CST-8'
+uci set system.@system[0].zonename='Asia/Shanghai'
 
 uci del system.ntp.server
-uci set system.ntp.use_dhcp="0"
-uci set system.ntp.enabled="1"
-uci add_list system.ntp.server="ntp1.aliyun.com"
-uci add_list system.ntp.server="ntp.tencent.com"
-uci add_list system.ntp.server="ntp.ntsc.ac.cn"
+uci set system.ntp.use_dhcp='0'
+uci set system.ntp.enabled='1'
+uci add_list system.ntp.server='ntp1.aliyun.com'
+uci add_list system.ntp.server='ntp.tencent.com'
+uci add_list system.ntp.server='ntp.ntsc.ac.cn'
 uci commit system
 
 #Dropbear
-uci set dropbear.@dropbear[0].Interface="lan"
+uci set dropbear.@dropbear[0].Interface='lan'
 uci commit dropbear
 
 # dnsmasq
 uci set dhcp.@dnsmasq[0].rebind_protection='0'
-uci set dhcp.@dnsmasq[0].cachesize="0"
-uci set dhcp.@dnsmasq[0].min_cache_ttl="0"
-uci set dhcp.@dnsmasq[0].max_cache_ttl="0"
+uci set dhcp.@dnsmasq[0].cachesize='0'
+uci set dhcp.@dnsmasq[0].min_cache_ttl='0'
+uci set dhcp.@dnsmasq[0].max_cache_ttl='0'
 uci set dhcp.@dnsmasq[0].dnsforwardmax='1500'
+uci set dhcp.@dnsmasq[0].dns_redirect='1'
 #uci set dhcp.lan.force='1'
 uci commit dhcp
 
@@ -56,7 +57,7 @@ uci set network.lan.ip6assign='64'
 uci set network.lan.ip6ifaceid='eui64'
 uci commit network
 
-uci set dhcp.lan.ra_dns="0"
+uci set dhcp.lan.ra_dns='0'
 uci commit dhcp
 
 /etc/init.d/packet_steering disable
