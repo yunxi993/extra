@@ -292,6 +292,7 @@ const methods = {
 				bonding:    access('/sys/module/bonding'),
 				mii_tool:   access('/usr/sbin/mii-tool'),
 				offloading: access('/sys/module/xt_FLOWOFFLOAD/refcnt') == true || access('/sys/module/nft_flow_offload/refcnt') == true,
+				fullcone:   access('/sys/module/xt_FULLCONENAT/refcnt') == true || access('/sys/module/nft_fullcone/refcnt') == true,
 				br2684ctl:  access('/usr/sbin/br2684ctl') == true,
 				swconfig:   access('/sbin/swconfig') == true,
 				zram:       access('/sys/class/zram-control') == true,
@@ -582,8 +583,8 @@ const methods = {
 			/*
 			 * encrypt password and assign it to rpcd login
 			 */
-			set_new_pwd(user, pwd);
-			return { result: 1 };
+			 set_new_pwd(user, pwd);
+			 return { result: 1 };
 		}
 	},
 
@@ -747,7 +748,7 @@ const methods = {
 
 			/* Workaround for targets that do not enumerate  all netdevs in board.json */
 			if (uname().machine in [ 'x86_64' ] &&
-				match(ports[0]?.device, /^eth\d+$/)) {
+			    match(ports[0]?.device, /^eth\d+$/)) {
 				let bus = realpath(`/sys/class/net/${ports[0].device}/device/subsystem`);
 
 				for (let netdev in lsdir('/sys/class/net')) {
