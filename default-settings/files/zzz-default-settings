@@ -41,6 +41,7 @@ uci set firewall.@defaults[0].synflood_protect='0'
 uci del firewall.@defaults[0].synflood_protect
 uci set firewall.@defaults[0].flow_offloading='1'
 uci del firewall.@defaults[0].flow_offloading_hw
+uci del firewall.@defaults[0].fullcone6
 uci commit firewall
 
 #Enable Packet Steering
