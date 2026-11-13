@@ -64,6 +64,9 @@ uci commit network
 #uci set dhcp.lan.ra_dns='0'
 #uci commit dhcp
 
+uci set irqbalance.@irqbalance[0].enabled='1'
+uci commit irqbalance
+
 /etc/init.d/packet_steering disable
 /etc/init.d/packet_steering stop
 #/etc/init.d/irqbalance disable
