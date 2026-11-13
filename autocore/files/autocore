@@ -3,6 +3,7 @@
 START=99
 
 start() {
+    local mem_kb t_max
     mem_kb=$(awk '/MemTotal/ {print $2}' /proc/meminfo)
     if [ "$mem_kb" -ge 4194304 ]; then
         t_max=134217728
@@ -25,7 +26,8 @@ start() {
         sysctl -qw net.ipv4.tcp_collapse_max_bytes=4194304
         sysctl -qw net.core.default_qdisc=fq
 
-    uci_changed=0
+    local uci_changed=0
+    local nic_path nic uci_name f
     for nic_path in /sys/class/net/*; do
         nic=$(basename "$nic_path")
 
@@ -40,28 +42,58 @@ start() {
             uci_changed=1
         fi
 
+        if [ "$(uci -q get "network.$uci_name.gro")" != "1" ]; then
+            uci set "network.$uci_name.gro=1"
+            uci_changed=1
+        fi
+
         ethtool -K "$nic" rx-checksum on 2>/dev/null || true
         ethtool -K "$nic" tx-checksum-ip-generic on 2>/dev/null || {
             ethtool -K "$nic" tx-checksum-ipv4 on 2>/dev/null || true
             ethtool -K "$nic" tx-checksum-ipv6 on 2>/dev/null || true
         }
-        for f in sg tx-scatter-gather; do
+        for f in gro sg tso tx-scatter-gather; do
             ethtool -K "$nic" "$f" on 2>/dev/null || true
         done
-
-        DRIVER=$(ethtool -i "$nic" 2>/dev/null | awk '/driver:/ {print $2}')
-        if [ "$DRIVER" = "igc" ]; then
-
-            RX_MAX=$(ethtool -g "$nic" 2>/dev/null | awk '/Pre-set maximums:/ {p=1;next} p && /^RX:/ {print $2;exit}')
-            TX_MAX=$(ethtool -g "$nic" 2>/dev/null | awk '/Pre-set maximums:/ {p=1;next} p && /^TX:/ {print $2;exit}')
-
-            [ -n "$RX_MAX" ] && ethtool -G "$nic" rx "$RX_MAX" 2>/dev/null
-            [ -n "$TX_MAX" ] && ethtool -G "$nic" tx "$TX_MAX" 2>/dev/null
-        fi
     done
 
     if [ "$uci_changed" -eq 1 ]; then
         uci commit network
         ubus call network reload
     fi
+
+    local pstate_file="/sys/devices/system/cpu/intel_pstate/status"
+    local cpu
+    if [ -f "$pstate_file" ]; then
+        [ "$(cat "$pstate_file")" = "passive" ] && echo "active" > "$pstate_file" 2>/dev/null
+        for cpu in /sys/devices/system/cpu/cpu*/cpufreq; do
+            [ -f "$cpu/scaling_governor" ] && echo "powersave" > "$cpu/scaling_governor" 2>/dev/null
+            [ -f "$cpu/energy_performance_preference" ] && echo "balance_performance" > "$cpu/energy_performance_preference" 2>/dev/null
+        done
+    fi
+
+[ "$ACTION" = "add" ] || exit 0
+[ -z "$DEVICENAME" ] && exit 0
+
+command -v ethtool >/dev/null 2>&1 || exit 0
+
+NIC="$DEVICENAME"
+
+[ ! -d "/sys/class/net/$NIC/device" ] && exit 0
+[ "$(cat "/sys/class/net/$NIC/type" 2>/dev/null)" != "1" ] && exit 0
+
+ETHTOOL_G=$(ethtool -g "$NIC" 2>/dev/null)
+[ -z "$ETHTOOL_G" ] && exit 0
+
+RX_MAX=$(echo "$ETHTOOL_G" | awk '/RX:/ {print $2; exit}')
+TX_MAX=$(echo "$ETHTOOL_G" | awk '/TX:/ {print $2; exit}')
+
+[ -n "$RX_MAX" ] && [ "$RX_MAX" != "0" ] && ethtool -G "$NIC" rx "$RX_MAX" 2>/dev/null
+[ -n "$TX_MAX" ] && [ "$TX_MAX" != "0" ] && ethtool -G "$NIC" tx "$TX_MAX" 2>/dev/null
+
+if ethtool -c "$NIC" 2>/dev/null | grep -q "Adaptive RX:"; then
+    ethtool -C "$NIC" adaptive-rx on adaptive-tx on >/dev/null 2>&1
+fi
+
+logger -t net-buffer "Maximized ring buffers for $NIC"
 }
