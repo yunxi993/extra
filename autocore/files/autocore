@@ -23,6 +23,7 @@ start() {
 
     [ -f /proc/sys/net/ipv4/tcp_collapse_max_bytes ] && \
         sysctl -qw net.ipv4.tcp_collapse_max_bytes=4194304
+        sysctl -qw net.core.default_qdisc=fq
 
     uci_changed=0
     for nic_path in /sys/class/net/*; do
