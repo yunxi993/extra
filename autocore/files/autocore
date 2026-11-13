@@ -18,8 +18,8 @@ start() {
         net.core.netdev_max_backlog=16384 \
         net.core.rmem_max="$t_max" \
         net.core.wmem_max="$t_max" \
-        net.ipv4.tcp_rmem="4096 87380 $t_max" \
-        net.ipv4.tcp_wmem="4096 65536 $t_max" \
+        net.ipv4.tcp_rmem="4096 4194304 $t_max" \
+        net.ipv4.tcp_wmem="4096 4194304 $t_max" \
 
     [ -f /proc/sys/net/ipv4/tcp_collapse_max_bytes ] && \
         sysctl -qw net.ipv4.tcp_collapse_max_bytes=4194304
